@@ -4,13 +4,15 @@ const path = require('node:path')
 const { Client, GatewayIntentBits } = require('discord.js')
 const TelegramBot = require('node-telegram-bot-api')
 
-const { discordToken, telegramToken, chatId } = require('./config.json')
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
 
 const client = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates],
 })
 
-const telegramBot = new TelegramBot(telegramToken, { polling: true })
+const telegramBot = new TelegramBot(process.env.TELEGRAM_API_TOKEN, { polling: true })
 const eventsPath = path.join(__dirname, 'events')
 const eventFiles = fs
     .readdirSync(eventsPath)
@@ -21,13 +23,13 @@ for (const file of eventFiles) {
     const event = require(filePath)
     if (event.once) {
         client.once(event.name, (...args) =>
-            event.execute(...args, telegramBot, chatId)
+            event.execute(...args, telegramBot, process.env.TELEGRAM_CHAT_ID)
         )
     } else {
         client.on(event.name, (...args) =>
-            event.execute(...args, telegramBot, chatId)
+            event.execute(...args, telegramBot, process.env.TELEGRAM_CHAT_ID)
         )
     }
 }
 
-client.login(discordToken)
+client.login(process.env.DISCORD_API_TOKEN)
