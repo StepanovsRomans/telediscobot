@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+        label 'kubeagent'
+    }
     environment {
         REGISTRY_URL = 'registry-svc.registry.svc.cluster.local:5000'
         IMAGE_NAME = 'telediscobot'
