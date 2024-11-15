@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: telediscobot-application
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: >
+      telediscobot=registry-svc.registry.svc.cluster.local/telediscobot:latest
+    argocd-image-updater.argoproj.io/telediscobot.update-strategy: latest
+spec:
+  project: default
+
+  source:
+    repoURL: git@github.com:StepanovsRomans/telediscobot.git
+    targetRevision: HEAD
+    path: deploy/kubernetes/dev
+    sshPrivateKeySecret:
+      name: github-default-ssh
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: telediscobot
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+
+    automated:
+      selfHeal: true
+      prune: true

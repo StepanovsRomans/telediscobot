@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telediscobot-deploy
+  labels:
+    app: telediscobot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telediscobot
+  template:
+    metadata:
+      labels:
+        app: telediscobot
+    spec:
+      containers:
+        - name: telediscobot
+          image: registry-svc.registry.svc.cluster.local/telediscobot:latest
+          ports:
+            - containerPort: 3000
